@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35527.113 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeToMp3", "YoutubeToMp3\YoutubeToMp3.csproj", "{F9D8A781-48E6-4976-B967-CD4BC31868C4}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{52E7FCB3-E0D7-4F1B-BFE7-2757A932F344}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{F9D8A781-48E6-4976-B967-CD4BC31868C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9D8A781-48E6-4976-B967-CD4BC31868C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9D8A781-48E6-4976-B967-CD4BC31868C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E7FCB3-E0D7-4F1B-BFE7-2757A932F344}.Debug|Any CPU.ActiveCfg = Debug
+		{52E7FCB3-E0D7-4F1B-BFE7-2757A932F344}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
