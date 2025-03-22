@@ -1,0 +1,97 @@
+﻿<Window x:Class="YoutubeToMp3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:YoutubeToMp3"
+        Title="YouTube to MP3" Height="600" Width="800">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Partie du haut (boutons) -->
+            <RowDefinition Height="*"/>
+            <!-- Liste des musiques -->
+        </Grid.RowDefinitions>
+
+        <!-- Partie du haut avec les boutons -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!-- Colonne gauche qui prend tout l'espace dispo -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Colonne droite ajustée à son contenu -->
+                <!-- Boutons -->
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                <Button Content="📋 Coller" Width="100" Click="PasteFromClipboard"/>
+                <Button Content="📂 Ouvrir dossier" Width="130" Margin="5,0,0,0" Click="OpenDownloadFolder"/>
+            </StackPanel>
+            <Button Grid.Column="1" HorizontalAlignment="Right" Content="⬇️ Télécharger" Width="120" Margin="5,0,0,0" Click="DownloadAll" Background="#4A90E2"/>
+        </Grid>
+        
+            
+            
+        
+
+        <!-- Liste des musiques -->
+        <ListView Grid.Row="1" Name="MusicList" Margin="5"
+          VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+          HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="5" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Miniature -->
+                        <Image Source="{Binding ThumbnailBitmap}" Grid.Column="0" Width="100" Height="60" Stretch="UniformToFill"/>
+
+                        <!-- Titre -->
+                        <TextBlock Text="{Binding Title}" Grid.Column="1" VerticalAlignment="Center" FontSize="14" Margin="10,0"
+                           TextWrapping="Wrap"/>
+
+                        <!-- Statut du téléchargement -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock FontSize="20" VerticalAlignment="Center" Margin="10,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value=""/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DownloadStatus}" Value="1">
+                                                <Setter Property="Text" Value="⌛"/>
+                                                <Setter Property="Foreground" Value="Orange"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DownloadStatus}" Value="2">
+                                                <Setter Property="Text" Value="⬇️"/>
+                                                <Setter Property="Foreground" Value="Blue"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DownloadStatus}" Value="3">
+                                                <Setter Property="Text" Value="✅"/>
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DownloadStatus}" Value="4">
+                                                <Setter Property="Text" Value="❌"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <Button FontSize="20" Padding="10" Content="⬇️" Width="40" Click="DownloadMusic" CommandParameter="{Binding}" Background="#4A90E2" VerticalAlignment="Stretch" Margin="0,5,0,5"/>
+                            <Button Padding="10" Content="❌" Width="40" Click="RemoveMusic" CommandParameter="{Binding}" Background="Red" VerticalAlignment="Stretch" Margin="0,5,0,5"/>
+                        </StackPanel>
+
+
+
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+
+    </Grid>
+</Window>
