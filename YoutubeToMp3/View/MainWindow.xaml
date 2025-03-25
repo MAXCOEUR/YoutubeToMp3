@@ -11,9 +11,8 @@
             <RowDefinition Height="*"/>
             <!-- Liste des musiques -->
         </Grid.RowDefinitions>
-
         <!-- Partie du haut avec les boutons -->
-        <Grid>
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <!-- Colonne gauche qui prend tout l'espace dispo -->
@@ -22,8 +21,9 @@
                 <!-- Boutons -->
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
-                <Button Content="📋 Coller" Width="100" Click="PasteFromClipboard"/>
+                <Button Content="📋 Coller" Width="100" Click="PasteFromClipboard" Background="Green"/>
                 <Button Content="📂 Ouvrir dossier" Width="130" Margin="5,0,0,0" Click="OpenDownloadFolder"/>
+                <ComboBox x:Name="cb_browser" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" SelectionChanged="cb_browser_SelectionChanged" Margin="5,0,0,0"/>
             </StackPanel>
             <Button Grid.Column="1" HorizontalAlignment="Right" Content="⬇️ Télécharger" Width="120" Margin="5,0,0,0" Click="DownloadAll" Background="#4A90E2"/>
         </Grid>

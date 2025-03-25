@@ -7,6 +7,7 @@ using YoutubeToMp3.model;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Controls;
+using YoutubeToMp3.Model;
 
 namespace YoutubeToMp3
 {
@@ -14,11 +15,14 @@ namespace YoutubeToMp3
     {
         private MusiqueRepository _musiqueRepository = new MusiqueRepository();
         private ObservableCollection<Musique> _musiqueList = new ObservableCollection<Musique>();
+        private SettingsManager settingsManager = SettingsManager.Instance;
 
         public MainWindow()
         {
             InitializeComponent();
             MusicList.ItemsSource = _musiqueList;
+            cb_browser.ItemsSource = settingsManager.browsers;
+            cb_browser.SelectedIndex = settingsManager.browserIndice;
         }
 
         private async void PasteFromClipboard(object sender, RoutedEventArgs e)
@@ -145,6 +149,11 @@ namespace YoutubeToMp3
             {
                 MessageBox.Show($"Erreur lors de l'ouverture du dossier : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void cb_browser_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            settingsManager.browserIndice = cb_browser.SelectedIndex;
         }
     }
 }
