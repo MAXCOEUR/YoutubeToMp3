@@ -7,6 +7,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>ressource\Designer.ico</ApplicationIcon>
+	<Version>1.0.5.0</Version>
+    <FileVersion>1.0.5.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion> <!-- Change rarement -->
   </PropertyGroup>
 
   <ItemGroup>
