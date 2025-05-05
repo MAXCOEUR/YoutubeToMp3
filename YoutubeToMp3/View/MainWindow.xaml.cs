@@ -23,6 +23,8 @@ namespace YoutubeToMp3
             MusicList.ItemsSource = _musiqueList;
             cb_browser.ItemsSource = settingsManager.browsers;
             cb_browser.SelectedIndex = settingsManager.browserIndice;
+
+            Title += " " + GetAppVersion();
         }
 
         private async void PasteFromClipboard(object sender, RoutedEventArgs e)
@@ -154,6 +156,12 @@ namespace YoutubeToMp3
         private void cb_browser_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             settingsManager.browserIndice = cb_browser.SelectedIndex;
+        }
+
+        private string GetAppVersion()
+        {
+            var version = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+            return version != null ? $"v{version}" : "v1.0";
         }
     }
 }
