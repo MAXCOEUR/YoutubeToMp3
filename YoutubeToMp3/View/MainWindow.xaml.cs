@@ -21,10 +21,37 @@ namespace YoutubeToMp3
         {
             InitializeComponent();
             MusicList.ItemsSource = _musiqueList;
-            cb_browser.ItemsSource = settingsManager.browsers;
-            cb_browser.SelectedIndex = settingsManager.browserIndice;
 
             Title += " " + GetAppVersion();
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await RunAutoUpdate();
+        }
+
+        private async Task RunAutoUpdate()
+        {
+            try
+            {
+                // 1. Afficher l'overlay et bloquer l'interface
+                UpdateOverlay.Visibility = Visibility.Visible;
+
+                // 2. Lancer la mise à jour (sur un thread séparé pour ne pas figer la barre de chargement)
+                await Task.Run(async () => {
+                    await _musiqueRepository.UpdateYtDlp();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la mise à jour : {ex.Message}");
+            }
+            finally
+            {
+                // 3. Cacher l'overlay et libérer l'utilisateur
+                UpdateOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void PasteFromClipboard(object sender, RoutedEventArgs e)
@@ -151,11 +178,6 @@ namespace YoutubeToMp3
             {
                 MessageBox.Show($"Erreur lors de l'ouverture du dossier : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private void cb_browser_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            settingsManager.browserIndice = cb_browser.SelectedIndex;
         }
 
         private string GetAppVersion()

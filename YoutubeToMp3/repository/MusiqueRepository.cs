@@ -28,6 +28,12 @@ namespace YoutubeToMp3.repository
             return await dataSource.DownloadMusique(musiqueyt);
         }
 
+        async public Task UpdateYtDlp()
+        {
+            YoutubeDataSource dataSource = new YoutubeDataSource();
+            await dataSource.UpdateYtDlp();
+        }
+
         public string GetPathFolder()
         {
             YoutubeDataSource dataSource = new YoutubeDataSource();

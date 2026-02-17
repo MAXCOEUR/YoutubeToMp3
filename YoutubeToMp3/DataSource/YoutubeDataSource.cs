@@ -15,7 +15,7 @@ namespace YoutubeToMp3.DataSource
     internal class YoutubeDataSource
     {
         private SettingsManager settingsManager = SettingsManager.Instance;
-        string appPath = Directory.GetCurrentDirectory();
+        string appPath = AppDomain.CurrentDomain.BaseDirectory;
         YoutubeClient _youtube = new YoutubeClient();
         public bool IsPlaylist(string url)
         {
@@ -62,6 +62,7 @@ namespace YoutubeToMp3.DataSource
         }
         public async Task<bool> DownloadMusique(Musique musiqueyt)
         {
+            Console.WriteLine(appPath);
             Directory.CreateDirectory(Path.Combine(appPath, "musiquesDownload"));
 
             string lienMusique = Path.Combine(appPath, "musiquesDownload", $"{musiqueyt.Title} ({musiqueyt.Author}).mp3");
@@ -111,80 +112,101 @@ namespace YoutubeToMp3.DataSource
 
         private async Task<bool> otherdl(Musique musiqueyt)
         {
+            string directory = Path.Combine(appPath, "musiquesDownload");
+            Directory.CreateDirectory(directory);
 
-            string lienMusique = Path.Combine(appPath, "musiquesDownload", $"{musiqueyt.Title} ({musiqueyt.Author}).mp3");
+            string outputTemplate = Path.Combine(directory, $"{musiqueyt.Title} ({musiqueyt.Author}).%(ext)s");
+            string finalMp3Path = Path.Combine(directory, $"{musiqueyt.Title} ({musiqueyt.Author}).mp3");
 
-            string arguments = $"-x --audio-format mp3 -o \"{lienMusique}\" ";
+            string qjsPath = Path.Combine(appPath, "outilsExtern", "qjs.exe");
+
+            string arguments = $"-x --audio-format mp3 --no-check-certificate " +
+                               $"--js-runtimes \"quickjs:{qjsPath}\" " +
+                               $"--extractor-args \"youtube:player-client=android,web;po_token=web+generated\" " +
+                               $"-o \"{outputTemplate}\" ";
+
             if (File.Exists(FFmpegGestion.ffmpegPath))
             {
-                arguments += " --ffmpeg-location \"" + FFmpegGestion.ffmpegPath + "\"";
+                arguments += $" --ffmpeg-location \"{FFmpegGestion.ffmpegPath}\"";
             }
 
-            if (SettingsManager.Instance.browsers[SettingsManager.Instance.browserIndice].ToLower().Contains("chrome"))
-            {
-                arguments += " --cookies-from-browser chrome";
-            }
-            else if (SettingsManager.Instance.browsers[SettingsManager.Instance.browserIndice].ToLower().Contains("edge"))
-            {
-                arguments += " --cookies-from-browser edge";
-            }
-            else if (SettingsManager.Instance.browsers[SettingsManager.Instance.browserIndice].ToLower().Contains("firefox"))
-            {
-                arguments += " --cookies-from-browser firefox";
-            }
-
-
-            arguments += " " + musiqueyt.Url;
+            arguments += $" \"{musiqueyt.Url}\"";
 
             using (var process = new Process())
             {
-                process.StartInfo.FileName = ".\\outilsExtern\\yt-dlp.exe";
+                process.StartInfo.FileName = Path.Combine(appPath, "outilsExtern", "yt-dlp.exe");
                 process.StartInfo.Arguments = arguments;
-                process.StartInfo.WorkingDirectory = ".\\outilsExtern";
+                process.StartInfo.WorkingDirectory = Path.Combine(appPath, "outilsExtern");
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.CreateNoWindow = true;
-                process.EnableRaisingEvents = true;
 
-                // Événement pour la sortie standard
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrEmpty(e.Data))
-                    {
-                        Console.WriteLine(e.Data);
-                    }
-                };
+                process.OutputDataReceived += (sender, e) => { if (e.Data != null) Console.WriteLine($"[yt-dlp]: {e.Data}"); };
+                process.ErrorDataReceived += (sender, e) => { if (e.Data != null) Console.WriteLine($"[Error]: {e.Data}"); };
 
-                // Événement pour la sortie d'erreur
-                process.ErrorDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrEmpty(e.Data))
-                    {
-                        Console.WriteLine($"Error: {e.Data}");
-                        // Traiter la sortie d'erreur ici
-                    }
-                };
-
-                // Démarrer le processus
                 process.Start();
-
-                // Commencer la redirection de la sortie standard et d'erreur de manière asynchrone
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
-                // Attendre que le processus se termine
+                // Attente asynchrone de la fin du processus
                 await Task.Run(() => process.WaitForExit());
 
-                var file = TagLib.File.Create(lienMusique);
-                file.Tag.Title = musiqueyt.Title;
-                file.Tag.Performers = new[] { musiqueyt.Author };
-                file.Save();
+                // Application des Tags ID3 sur le fichier MP3 généré
+                if (File.Exists(finalMp3Path))
+                {
+                    try
+                    {
+                        var file = TagLib.File.Create(finalMp3Path);
+                        file.Tag.Title = musiqueyt.Title;
+                        file.Tag.Performers = new[] { musiqueyt.Author };
+                        file.Save();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erreur lors de l'écriture des tags: {ex.Message}");
+                        return true; // On retourne quand même true car le fichier est téléchargé
+                    }
+                }
 
-                return true;
+                return false;
+            }
+        }
+        public async Task UpdateYtDlp()
+        {
+            Console.WriteLine("Vérification des mises à jour pour yt-dlp...");
+            string toolsPath = Path.Combine(appPath, "outilsExtern");
+            string ytDlpPath = Path.Combine(toolsPath, "yt-dlp.exe");
+
+            if (!File.Exists(ytDlpPath))
+            {
+                Console.WriteLine("Erreur : yt-dlp.exe introuvable.");
+                return;
             }
 
+            using (var process = new Process())
+            {
+                process.StartInfo.FileName = ytDlpPath;
+                process.StartInfo.Arguments = "-U";
+                process.StartInfo.WorkingDirectory = toolsPath;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
 
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+
+                process.OutputDataReceived += (sender, e) => {
+                    if (e.Data != null) Console.WriteLine($"[yt-dlp Update]: {e.Data}");
+                };
+
+                process.Start();
+
+                process.BeginOutputReadLine();
+                await Task.Run(() => process.WaitForExit());
+
+                Console.WriteLine("Processus de mise à jour terminé.");
+            }
         }
 
         private string CleanFileName(string fileName)

@@ -11,6 +11,7 @@
             <RowDefinition Height="*"/>
             <!-- Liste des musiques -->
         </Grid.RowDefinitions>
+        
         <!-- Partie du haut avec les boutons -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -23,7 +24,6 @@
             <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
                 <Button Content="📋 Coller" Width="100" Click="PasteFromClipboard" Background="Green"/>
                 <Button Content="📂 Ouvrir dossier" Width="130" Margin="5,0,0,0" Click="OpenDownloadFolder"/>
-                <ComboBox x:Name="cb_browser" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" SelectionChanged="cb_browser_SelectionChanged" Margin="5,0,0,0"/>
             </StackPanel>
             <Button Grid.Column="1" HorizontalAlignment="Right" Content="⬇️ Télécharger" Width="120" Margin="5,0,0,0" Click="DownloadAll" Background="#4A90E2"/>
         </Grid>
@@ -91,6 +91,15 @@
             </ListView.ItemTemplate>
         </ListView>
 
+        <Grid x:Name="UpdateOverlay" Grid.RowSpan="2" Background="#CC000000" Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="20" Margin="0,0,0,10"/>
+                <TextBlock Text="Mise à jour des composants..." 
+               Foreground="White" FontSize="18" HorizontalAlignment="Center"/>
+                <TextBlock Text="Veuillez patienter quelques instants." 
+               Foreground="LightGray" FontSize="12" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
 
 
     </Grid>
